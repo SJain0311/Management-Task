@@ -19,10 +19,9 @@ import {
   CardContent,
   CssBaseline,
   Grid,
-  Avatar,
   Typography,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Container } from "@mui/system";
 import { ToastContainer, toast } from "react-toastify";
 import firebase from "../firebaseConfig";
@@ -35,32 +34,33 @@ const checkboxes = [
   { id: 3, text: "Dancing" },
   { id: 4, text: "Swimming" },
 ];
-function ManagerSignup(props) {
+function Signup(props) {
+  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     fname: "",
     lname: "",
     gender: "",
-    hobbies: "",
+    hobbies: [],
+    type: "",
   });
-  //   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-  //   const handleCheckChange = (id) => {
-  //     const findIdx = selectedCheckbox.indexOf(id);
-
-  //     let selected;
-  //     if (findIdx > -1) {
-  //       selected = selectedCheckbox.filter((checkboxId) => checkboxId !== id);
-  //     } else {
-  //       selected = [...selectedCheckbox, id];
-  //     }
-  //     setSelectedCheckbox(selected);
-  //   };
+  const [selectedCheckbox, setSelectedCheckbox] = useState([]);
+  // const handleCheckChange = (e,id) => {
+  //   const findIdx = selectedCheckbox.indexOf(id);
+  //   let selected;
+  //   if (findIdx > -1) {
+  //     selected = selectedCheckbox.filter((checkboxId) => checkboxId !== id);
+  //   } else {
+  //     selected = [...selectedCheckbox, id];
+  //   }
+  //   setSelectedCheckbox(selected);
+  // };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const createUserDocument = async (user, formData) => {
+  const createUserDocument = async (user, formData, selectedCheckbox) => {
     if (!user) return;
 
     const { email } = formData;
@@ -68,15 +68,19 @@ function ManagerSignup(props) {
     const { fname } = formData;
     const { lname } = formData;
     const { gender } = formData;
-    const { hobbies } = formData;
+    const { type } = formData;
+    const uid = user.user.uid;
 
-    await setDoc(doc(db, `managerData`, `${user?.user.uid}`), {
+    // var { hobbies } =selectedCheckbox;
+    await setDoc(doc(db, `employeeData`, `${user?.user.uid}`), {
       email,
       password,
       fname,
       lname,
       gender,
-      hobbies,
+      type,
+      depertment:"",
+      // hobbies,
       //   createdAt: new Date(),
     });
   };
@@ -90,11 +94,13 @@ function ManagerSignup(props) {
       formData.password
     )
       .then((res) => {
+        Navigate("/");
         if (res) {
           createUserDocument(res, formData);
           console.log("res", res, "hi", formData);
-          props.toggle();
+          // props.toggle();
           toast.success("User Register Successfully");
+          // Navigate("/");
         }
       })
       .catch((error) => {
@@ -110,16 +116,18 @@ function ManagerSignup(props) {
       });
   };
   return (
-    <div>
-    <div style={{marginTop:50}}>
+    <div style={{ marginTop: 50 }}>
       <Container component="main" maxWidth="sm">
         <Card>
           <CardContent>
-            <div className="center" style={{textAlign:'center',marginTop:10}}>
-             <center>
-              <h3>Sign Up</h3>
+            <div
+              className="center"
+              style={{ textAlign: "center", marginTop: 10 }}
+            >
+              <center>
+                <h3>Sign Up</h3>
               </center>
-              <form onSubmit={(e) => handleSignUp(e)}>           
+              <form onSubmit={(e) => handleSignUp(e)}>
                 <TextField
                   style={{ marginRight: "20px" }}
                   name="fname"
@@ -139,7 +147,6 @@ function ManagerSignup(props) {
                   id="outlined-basic"
                   label="Enter Last Name"
                   type="text"
-                
                   //   validators={["required", "isEmail"]}
                   value={formData.lname}
                   required
@@ -173,7 +180,7 @@ function ManagerSignup(props) {
                     handleChange(e);
                   }}
                 />
-                <FormControl style={{marginTop:5}}>
+                <FormControl style={{ marginTop: 5 }}>
                   <FormLabel id="demo-row-radio-buttons-group-label">
                     Gender
                   </FormLabel>
@@ -198,29 +205,58 @@ function ManagerSignup(props) {
                   </RadioGroup>
                 </FormControl>
                 <br /> <br />
-                {/* <TextareaAutosize
-                  aria-label="minimum height"
-                  minRows={3}
-                  placeholder="Minimum 3 rows"
-                  style={{ width: 200 }}
-                  name="hobbies"
-                  value={formData.hobbies}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                /> */}
+                <FormControl>
+                
+          <Typography>Job Designation</Typography>
+          <RadioGroup
+            row
+            name="type"
+            onChange={(e) => {
+              handleChange(e);
+            }}
+          >
+            <FormControlLabel
+              value="employee"
+              control={<Radio />}
+              label="Employee"
+            />
+            <FormControlLabel
+              value="manager"
+              control={<Radio />}
+              label="Manager"
+            />
+          </RadioGroup>
+        </FormControl>
+                {/* <div className="chechBox mt-4">
+                  <p>Blog Type Select</p>
+                  {checkboxes.map((checkbox) => (
+                    <label key={checkbox.id}>
+                      {checkbox.text}
+                      <input
+                        value={checkbox.id}
+                        type="checkbox"
+                        onChange={(e) => handleCheckChange(e,checkbox.text)}
+                        selected={selectedCheckbox.includes(checkbox.text)}
+                      />
+                    </label>
+                  ))}
+                </div> */}
                 <br />
                 <br />
+              
                 <Button type="submit" variant="contained">
+               
                   Sign Up
+                 
                 </Button>
+               
                 <br />
                 <br />
                 <Divider />
                 <Grid>
-                <p>Already account</p>
-                  <Link className="account" to="/managerLogin">
-                     Login
+                  <p>Already account</p>
+                  <Link className="account" to="/">
+                    Login
                   </Link>
                 </Grid>
               </form>
@@ -229,16 +265,7 @@ function ManagerSignup(props) {
         </Card>
       </Container>
     </div>
-    <footer
-        className="bg-light text-center text-lg-start"
-        style={{ marginTop: 235 }}
-      >
-        <div className="text-center p-2" style={{ backgroundColor: "black" }}>
-          <Link to="/">Login</Link>
-        </div>
-      </footer>
-      </div>
   );
 }
 
-export default ManagerSignup;
+export default Signup;

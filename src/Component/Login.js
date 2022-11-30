@@ -10,7 +10,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Card from "@mui/material/Card";
 import LockRound from "@mui/material/Icon";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebaseConfig";
+import { auth,db } from "../firebaseConfig";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -23,11 +23,14 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { query, collection, getDocs, where } from "firebase/firestore";
 import "../App.css";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { Container } from "@mui/system";
+import { async } from "@firebase/util";
 
 function Login(props) {
+  const Navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -40,17 +43,26 @@ function Login(props) {
   const handleCheck = (e) => {
     setRememberMe(e.target.checked);
   };
-  const handleLogin = (e) => {
+  const handleLogin = async(e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((res) => {
-        alert("User Login Successfully");
-        setEmail("");
-        setPassword("");
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      const uid = res.user.uid;
+      console.log(uid);
+      const q = query(collection(db, "employeeData"), where("email", "==", email));
+      const docs = await getDocs(q);
+      // console.log(docs.docs[0].data());
+      const type = docs.docs[0].data().type;
+      console.log(type);
+      if (type) {
+        // setType(type);
+        type === "manager" ? Navigate(`/allData`) : Navigate(`/empData`);
+      } else {
+        return "No user Found";
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div>
@@ -112,8 +124,7 @@ function Login(props) {
                   <Grid>
                     <p> Don't have an account</p>
                     <Link
-                      onClick={props.toggle}
-                      to="/managerSignup"
+                      to="/signup"
                       className="account"
                     >
                       Sign Up
