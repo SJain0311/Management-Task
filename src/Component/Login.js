@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import FormGroup from "@mui/material/FormGroup";
 import Checkbox from "@mui/material/Checkbox";
 import Card from "@mui/material/Card";
 import LockRound from "@mui/material/Icon";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth,db } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
+import { query, collection, getDocs, where } from "firebase/firestore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { ToastContainer, toast } from "react-toastify";
-
+import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Avatar,
   Button,
@@ -21,11 +18,9 @@ import {
   CssBaseline,
   Divider,
   Grid,
-  Typography,
 } from "@mui/material";
-import { query, collection, getDocs, where } from "firebase/firestore";
 import "../App.css";
-import { Link,useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Container } from "@mui/system";
 import { async } from "@firebase/util";
 
@@ -48,15 +43,14 @@ function Login(props) {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       const uid = res.user.uid;
-      console.log(uid);
-      const q = query(collection(db, "employeeData"), where("email", "==", email));
+      // console.log(uid);
+      const q = query(collection(db, "employeeData"), where("uid", "==", uid));
       const docs = await getDocs(q);
-      // console.log(docs.docs[0].data());
       const type = docs.docs[0].data().type;
       console.log(type);
       if (type) {
         // setType(type);
-        type === "manager" ? Navigate(`/allData`) : Navigate(`/empData`);
+        type === "manager" ? Navigate(`/allData`) : Navigate(`/empData/${uid}`);
       } else {
         return "No user Found";
       }
@@ -135,65 +129,8 @@ function Login(props) {
             </CardContent>
           </Card>
         </Container>
-        {/* <form>
-        <TextField
-          name="fname"
-          label="Enter First Name"
-          variant="filled"
-          value={formData.fname}
-          onChange={(e) => {
-            handleChange(e);
-          }}
-        />
-        <br />
-        <br />
-        <TextField
-          id="filled-basic"
-          name="lname"
-          variant="filled"
-          label="Enter Last Name"
-          value={formData.lname}
-          onChange={(e) => {
-            handleChange(e);
-          }}
-        />
-        {/* <h2>hi {formData.fname}</h2>
-        <h2>hi {formData.lname}</h2> */}
-        {/* <FormControl>
-          <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="female"
-            name="radio-buttons-group"
-          >
-            <FormControlLabel
-              value="female"
-              control={<Radio />}
-              label="Female"
-            />
-            <FormControlLabel value="male" control={<Radio />} label="Male" />
-            <FormControlLabel value="other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        </FormControl> */}
-        {/* <FormGroup sx={{ textAlign: "center" }}>
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="Label"
-            className="center"
-            sx={{ textAlign: "center" }}
-          />
-        </FormGroup>
-        <Button variant="contained">Submit</Button> */}
-        {/* </form> */}
+
       </div>
-      <footer
-        className="bg-light text-center text-lg-start"
-        style={{ marginTop: 244 }}
-      >
-        <div className="text-center p-2" style={{ backgroundColor: "blue" }}>
-          <Link to="/managerLogin">Manager Login</Link>
-        </div>
-      </footer>
     </div>
   );
 }

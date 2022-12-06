@@ -44,6 +44,7 @@ function Signup(props) {
     gender: "",
     hobbies: [],
     type: "",
+    uid: "",
   });
   const [selectedCheckbox, setSelectedCheckbox] = useState([]);
   // const handleCheckChange = (e,id) => {
@@ -67,6 +68,9 @@ function Signup(props) {
     const { password } = formData;
     const { fname } = formData;
     const { lname } = formData;
+    const { city } = formData;
+    const { salary } = formData;
+    const { hobbies } = formData;
     const { gender } = formData;
     const { type } = formData;
     const uid = user.user.uid;
@@ -74,12 +78,16 @@ function Signup(props) {
     // var { hobbies } =selectedCheckbox;
     await setDoc(doc(db, `employeeData`, `${user?.user.uid}`), {
       email,
-      password,
       fname,
       lname,
       gender,
       type,
-      depertment:"",
+      uid,
+      salary,
+      city,
+      hobbies,
+      dept: "",
+      createdAt: new Date(),
       // hobbies,
       //   createdAt: new Date(),
     });
@@ -180,6 +188,32 @@ function Signup(props) {
                     handleChange(e);
                   }}
                 />
+                <br />
+                <br />
+                <TextField
+                  style={{ marginRight: "20px" }}
+                  id="outlined-basic"
+                  name="city"
+                  value={formData.city}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  label="City"
+                  variant="outlined"
+                />
+                <TextField
+                  style={{ marginRight: "20px" }}
+                  id="outlined-basic"
+                  name="salary"
+                  type="number"
+                  value={formData.salary}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  label="Salary"
+                  variant="outlined"
+                />
+             
                 <FormControl style={{ marginTop: 5 }}>
                   <FormLabel id="demo-row-radio-buttons-group-label">
                     Gender
@@ -204,29 +238,45 @@ function Signup(props) {
                     />
                   </RadioGroup>
                 </FormControl>
+                <br />
+                <br />
+                <Typography>Hobbies</Typography>
+                <TextField
+                  style={{ marginRight: "20px" }}
+                  id="outlined-basic"
+                  minRows={1}     
+                  name="hobbies"
+                  type="hobbies"
+                  value={formData.hobbies}
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  label="Hobbies"
+                  variant="outlined"
+                />
+                
                 <br /> <br />
                 <FormControl>
-                
-          <Typography>Job Designation</Typography>
-          <RadioGroup
-            row
-            name="type"
-            onChange={(e) => {
-              handleChange(e);
-            }}
-          >
-            <FormControlLabel
-              value="employee"
-              control={<Radio />}
-              label="Employee"
-            />
-            <FormControlLabel
-              value="manager"
-              control={<Radio />}
-              label="Manager"
-            />
-          </RadioGroup>
-        </FormControl>
+                  <Typography>Job Designation</Typography>
+                  <RadioGroup
+                    row
+                    name="type"
+                    onChange={(e) => {
+                      handleChange(e);
+                    }}
+                  >
+                    <FormControlLabel
+                      value="employee"
+                      control={<Radio />}
+                      label="Employee"
+                    />
+                    <FormControlLabel
+                      value="manager"
+                      control={<Radio />}
+                      label="Manager"
+                    />
+                  </RadioGroup>
+                </FormControl>
                 {/* <div className="chechBox mt-4">
                   <p>Blog Type Select</p>
                   {checkboxes.map((checkbox) => (
@@ -243,13 +293,9 @@ function Signup(props) {
                 </div> */}
                 <br />
                 <br />
-              
                 <Button type="submit" variant="contained">
-               
                   Sign Up
-                 
                 </Button>
-               
                 <br />
                 <br />
                 <Divider />
