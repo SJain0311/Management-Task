@@ -8,11 +8,9 @@ import FormLabel from "@mui/material/FormLabel";
 import FormGroup from "@mui/material/FormGroup";
 import Checkbox from "@mui/material/Checkbox";
 import Card from "@mui/material/Card";
-import LockRound from "@mui/material/Icon";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
 import { setDoc, doc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
+import { db } from "../firebaseConfig"
 import {
   Divider,
   Button,
@@ -28,12 +26,7 @@ import firebase from "../firebaseConfig";
 import { auth } from "../firebaseConfig";
 import { async } from "@firebase/util";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-const checkboxes = [
-  { id: 1, text: "Reading" },
-  { id: 2, text: "Watching Movie" },
-  { id: 3, text: "Dancing" },
-  { id: 4, text: "Swimming" },
-];
+
 function Signup(props) {
   const Navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -42,21 +35,11 @@ function Signup(props) {
     fname: "",
     lname: "",
     gender: "",
-    hobbies: [],
+    hobbies: "",
     type: "",
     uid: "",
   });
-  const [selectedCheckbox, setSelectedCheckbox] = useState([]);
-  // const handleCheckChange = (e,id) => {
-  //   const findIdx = selectedCheckbox.indexOf(id);
-  //   let selected;
-  //   if (findIdx > -1) {
-  //     selected = selectedCheckbox.filter((checkboxId) => checkboxId !== id);
-  //   } else {
-  //     selected = [...selectedCheckbox, id];
-  //   }
-  //   setSelectedCheckbox(selected);
-  // };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -75,7 +58,6 @@ function Signup(props) {
     const { type } = formData;
     const uid = user.user.uid;
 
-    // var { hobbies } =selectedCheckbox;
     await setDoc(doc(db, `employeeData`, `${user?.user.uid}`), {
       email,
       fname,
@@ -88,8 +70,6 @@ function Signup(props) {
       hobbies,
       dept: "",
       createdAt: new Date(),
-      // hobbies,
-      //   createdAt: new Date(),
     });
   };
 
@@ -106,9 +86,7 @@ function Signup(props) {
         if (res) {
           createUserDocument(res, formData);
           console.log("res", res, "hi", formData);
-          // props.toggle();
           toast.success("User Register Successfully");
-          // Navigate("/");
         }
       })
       .catch((error) => {
@@ -132,8 +110,8 @@ function Signup(props) {
               className="center"
               style={{ textAlign: "center", marginTop: 10 }}
             >
-              <center>
-                <h3>Sign Up</h3>
+              <center style={{marginBottom:20}}>
+                <Typography style={{fontSize:'bold'}}>Sign Up</Typography> 
               </center>
               <form onSubmit={(e) => handleSignUp(e)}>
                 <TextField
@@ -202,7 +180,6 @@ function Signup(props) {
                   variant="outlined"
                 />
                 <TextField
-                  style={{ marginRight: "20px" }}
                   id="outlined-basic"
                   name="salary"
                   type="number"
@@ -215,9 +192,9 @@ function Signup(props) {
                 />
              
                 <FormControl style={{ marginTop: 5 }}>
-                  <FormLabel id="demo-row-radio-buttons-group-label">
-                    Gender
-                  </FormLabel>
+
+                  <Typography>Gender</Typography>
+                  
                   <RadioGroup
                     row
                     aria-labelledby="demo-row-radio-buttons-group-label"
@@ -277,20 +254,7 @@ function Signup(props) {
                     />
                   </RadioGroup>
                 </FormControl>
-                {/* <div className="chechBox mt-4">
-                  <p>Blog Type Select</p>
-                  {checkboxes.map((checkbox) => (
-                    <label key={checkbox.id}>
-                      {checkbox.text}
-                      <input
-                        value={checkbox.id}
-                        type="checkbox"
-                        onChange={(e) => handleCheckChange(e,checkbox.text)}
-                        selected={selectedCheckbox.includes(checkbox.text)}
-                      />
-                    </label>
-                  ))}
-                </div> */}
+            
                 <br />
                 <br />
                 <Button type="submit" variant="contained">

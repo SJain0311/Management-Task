@@ -43,13 +43,11 @@ function Login(props) {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       const uid = res.user.uid;
-      // console.log(uid);
       const q = query(collection(db, "employeeData"), where("uid", "==", uid));
       const docs = await getDocs(q);
       const type = docs.docs[0].data().type;
       console.log(type);
       if (type) {
-        // setType(type);
         type === "manager" ? Navigate(`/allData`) : Navigate(`/empData/${uid}`);
       } else {
         return "No user Found";
@@ -97,16 +95,6 @@ function Login(props) {
                       handlePassword(e);
                     }}
                   />
-                  <br />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        value={rememberMe}
-                        onChange={(e) => handleCheck(e)}
-                      />
-                    }
-                    label="Remember Me"
-                  ></FormControlLabel>
                   <br />
                   <br />
                   <Button type="submit" variant="contained">

@@ -26,7 +26,7 @@ function DropDown({ data }) {
     setDepts(data.dept);
   }, [data.dept]);
   return (
-    <div>
+   
       <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
         <Select
           labelId="demo-simple-select-standard-label"
@@ -42,7 +42,7 @@ function DropDown({ data }) {
           <MenuItem value={"It"}>IT</MenuItem>
         </Select>
       </FormControl>
-    </div>
+  
   );
 }
 

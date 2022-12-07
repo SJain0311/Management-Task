@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import { TableRows } from "@mui/icons-material";
 // import { setRows } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { Container } from "@mui/material";
+import { Container ,Button} from "@mui/material";
 import { db } from "../firebaseConfig";
 import {
   query,
@@ -17,7 +17,6 @@ import {
   where,
   doc,
   getDoc,
-
 } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -26,7 +25,7 @@ function EmpData() {
   const { uid } = useParams();
   const Navigate = useNavigate();
   const [rows, setRows] = useState([]);
- 
+
   const handleData = async () => {
     try {
       const blog = query(
@@ -48,16 +47,21 @@ function EmpData() {
     }
   };
 
+  const logOut = (e) => {
+    e.preventDefault();
+    Navigate("/");
+  };
+
   useEffect(() => {
     handleData();
-  },[uid]);
+  }, [uid]);
   return (
     <div>
-      <Container component="main" maxWidth="md">
+      <Container component="main" style={{marginTop:25}}>
         <TableContainer component={Paper}>
           <Table sx={{ Width: "400px" }} aria-label="simple table">
             <TableHead>
-              <TableRow style={{ background: "black" }}>
+              <TableRow style={{ background: "Grey" }}>
                 <TableCell style={{ color: "white " }}>Fname</TableCell>
                 <TableCell style={{ color: "white " }} align="right">
                   Lname
@@ -69,18 +73,20 @@ function EmpData() {
                   Gender
                 </TableCell>
                 <TableCell style={{ color: "white " }} align="right">
+                  Hobbies
+                </TableCell>
+                <TableCell style={{ color: "white " }} align="right">
                   City
                 </TableCell>
                 <TableCell style={{ color: "white " }} align="right">
-                Salary
+                  Salary
                 </TableCell>
                 <TableCell style={{ color: "white " }} align="right">
-                Department
+                  Department
                 </TableCell>
               </TableRow>
             </TableHead>
-            {/* <TableRow key={row?.name}>
-    </TableRow> */}
+
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.name}>
@@ -88,17 +94,21 @@ function EmpData() {
                   <TableCell align="right">{row.lname}</TableCell>
                   <TableCell align="right">{row.email}</TableCell>
                   <TableCell align="right">{row.gender}</TableCell>
-                  {/* <TableCell align="right">{row.hobbies}</TableCell> */}
+                  <TableCell align="right">{row.hobbies}</TableCell>
                   <TableCell align="right">{row.city}</TableCell>
                   <TableCell align="right">{row.salary}</TableCell>
                   <TableCell align="right">{row.dept}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
-            
           </Table>
         </TableContainer>
       </Container>
+      <div style={{ margin: 25 }}>
+        <Button variant="outlined" onClick={logOut}>
+          Logout
+        </Button>
+      </div>
     </div>
   );
 }

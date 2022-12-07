@@ -27,15 +27,20 @@ import {
   doc,
   getDoc,
   updateDoc,
-  orderBy
+  orderBy,
+  startAt,
+  startAfter,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import DropDown from "../Component/DropDown";
 
-function AllData( props ) {
+function AllData(props) {
   const { formData } = props;
+  const Navigate = useNavigate();
   const [depts, setDepts] = useState("");
   const [rows, setRows] = useState([]);
   const [querys, setQuerys] = useState(null);
+
   const handleData = async () => {
     const empData = query(
       collection(db, "employeeData"),
@@ -50,16 +55,17 @@ function AllData( props ) {
     console.log(rows);
     return result;
   };
+
   const handleQuery = async (e) => {
     setQuerys(e.target.value);
-    let aa = e.target.value;
-    if (aa == "1") {
+    let check = e.target.value;
+    if (check == "1") {
       console.log("1");
       const queryRef = query(
         collection(db, "employeeData"),
         where("type", "==", "employee"),
         where("dept", "==", "HR"),
-        orderBy("salary", "desc")
+        orderBy("salary")
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);
@@ -69,14 +75,15 @@ function AllData( props ) {
       }));
       console.log(checkQuery);
       setRows(checkQuery);
-      // setaa(checkQuery);
+      // setcheck(checkQuery);
       return checkQuery;
-    } else if (aa == "2") {
+    } else if (check == "2") {
       console.log("2");
       const queryRef = query(
         collection(db, "employeeData"),
         where("type", "==", "employee"),
-        where("dept", "==", "IT")
+        where("dept", "==", "It"),
+        orderBy("salary", "desc")
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);
@@ -87,15 +94,13 @@ function AllData( props ) {
       console.log("checkQuery", checkQuery);
       console.log("snapshot", snapshot);
       setRows(checkQuery);
-      // setaa(checkQuery);
-      // return checkQuery;
-    } else if (aa == "3") {
+    } else if (check == "3") {
       console.log("3");
       const queryRef = query(
         collection(db, "employeeData"),
-        where("type", "==", "employee"),
-        where("dept", "==", "II"),
-        where("city", "==", "surat")
+        where("city", "==", "Surat"),
+        where("dept", "==", "It"),
+        where("type", "==", "employee")
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);
@@ -105,16 +110,14 @@ function AllData( props ) {
       }));
       console.log("check", checkQuery);
       setRows(checkQuery);
-      // setaa(checkQuery);
-      // return checkQuery;
-    } else if (aa == "4") {
+    } else if (check == "4") {
       console.log("4");
       const queryRef = query(
         collection(db, "employeeData"),
         where("type", "==", "employee"),
-        // where("dept", "==", "It"),
-        orderBy("city", "", "S")
-        // startAt("A" || "a")
+        where("dept", "==", "It"),
+        orderBy("city"),
+        startAt(`A`)
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);
@@ -126,13 +129,12 @@ function AllData( props ) {
       setRows(checkQuery);
       // setQuerys(checkQuery);
       // return snapshot.docs;
-    } else if (aa == "5") {
+    } else if (check == "5") {
       console.log("5");
       const queryRef = query(
         collection(db, "employeeData"),
         where("type", "==", "employee"),
         where("dept", "==", "Sales")
-        // orderBy("fname", "==", "desc")
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);
@@ -146,53 +148,59 @@ function AllData( props ) {
       return snapshot.docs;
     }
   };
+  const logOut = (e) => {
+    e.preventDefault();
+    Navigate("/");
+  };
 
   useEffect(() => {
     handleData();
   }, []);
   return (
     <div>
-      <FormControl>
-        <Typography>Job Designation</Typography>
-        <RadioGroup row name="type"  onChange={(e) => handleQuery(e)}
-            value={querys}>
-          <FormControlLabel
-            value="1"
-            control={<Radio size="small" />}
-            label="Max.Salary in HR Dept."
-          />
-          <FormControlLabel
-            value="2"
-            control={<Radio size="small" />}
-            label="Min.Salary in IT Dept."
-          />{" "}
-          <FormControlLabel
-            value="3"
-            control={<Radio size="small" />}
-            label="Employee in IT with Surat"
-          />
-          <FormControlLabel
-            value="4"
-            control={<Radio size="small" />}
-            label="Employee in IT & city Name with S"
-          />{" "}
-          <FormControlLabel
-            value="5"
-            control={<Radio size="small" />}
-            label="Employee in Sales Department"
-          />
-          <FormControlLabel
-            value="6"
-            control={<Radio size="small" />}
-            label="All Employee"
-          />
-        </RadioGroup>
-      </FormControl>
-      <Container component="main" maxWidth="md">
+      <Container component="main">
+        <div style={{ marginTop: 30 }}>
+          <Typography variant="h6">Filter</Typography>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            onChange={(e) => handleQuery(e)}
+            value={querys}
+          >
+            <FormControlLabel
+              value="1"
+              control={<Radio />}
+              label="HR departments with Max salary"
+            />
+
+            <FormControlLabel
+              value="2"
+              control={<Radio />}
+              label="IT departments with Min salary"
+            />
+            <FormControlLabel
+              value="3"
+              control={<Radio />}
+              label=" IT departments and location is Surat city"
+            />
+            <FormControlLabel
+              value="4"
+              control={<Radio />}
+              label=" City name is starting from A"
+            />
+            <FormControlLabel
+              value="5"
+              control={<Radio />}
+              label=" Sales departments and descending order of employee name"
+            />
+          </RadioGroup>
+        </div>
+
         <TableContainer component={Paper}>
           <Table sx={{ Width: "400px" }} aria-label="simple table">
             <TableHead>
-              <TableRow style={{ background: "black" }}>
+              <TableRow style={{ background: "Grey" }}>
                 <TableCell style={{ color: "white " }}>Fname</TableCell>
                 <TableCell style={{ color: "white " }} align="right">
                   Lname
@@ -203,11 +211,16 @@ function AllData( props ) {
                 <TableCell style={{ color: "white " }} align="right">
                   Gender
                 </TableCell>
-                <TableCell style={{ color: "white " }} align="right">Salary</TableCell>
-                <TableCell style={{ color: "white " }} align="right">City</TableCell>
-                <TableCell style={{ color: "white " }} align="right">Department</TableCell>
+                <TableCell style={{ color: "white " }} align="right">
+                  Salary
+                </TableCell>
+                <TableCell style={{ color: "white " }} align="right">
+                  City
+                </TableCell>
+                <TableCell style={{ color: "white " }} align="right">
+                  Department
+                </TableCell>
               </TableRow>
-              
             </TableHead>
             <TableBody>
               {rows.map((row) => (
@@ -231,6 +244,11 @@ function AllData( props ) {
           </Table>
         </TableContainer>
       </Container>
+      <div style={{ margin: 25 }}>
+        <Button variant="outlined" onClick={logOut}>
+          Logout
+        </Button>
+      </div>
     </div>
   );
 }
