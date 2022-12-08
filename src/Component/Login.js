@@ -11,6 +11,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { ToastContainer, toast } from "react-toastify";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from 'formik';
 import {
   Avatar,
   Button,
@@ -23,6 +24,30 @@ import "../App.css";
 import { Link } from "react-router-dom";
 import { Container } from "@mui/system";
 import { async } from "@firebase/util";
+
+const initialValues =  {
+  name: '',
+  email: '',
+  channel: ''
+}
+const onSubmit = values => {
+  alert(JSON.stringify(values, null, 2));
+}
+const validate = values => {
+  const errors = {};
+  if (!values.name) {
+      errors.name = 'Required';
+  }
+  if (!values.channel) {
+      errors.channel = 'Required';
+  }
+  if (!values.email) {
+      errors.email = 'Required';
+  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+      errors.email = 'Invalid email address';
+  }
+  return errors;
+}
 
 function Login(props) {
   const Navigate = useNavigate();
