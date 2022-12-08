@@ -11,7 +11,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { ToastContainer, toast } from "react-toastify";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useFormik } from 'formik';
+import { useFormik } from "formik";
 import {
   Avatar,
   Button,
@@ -25,29 +25,29 @@ import { Link } from "react-router-dom";
 import { Container } from "@mui/system";
 import { async } from "@firebase/util";
 
-const initialValues =  {
-  name: '',
-  email: '',
-  channel: ''
-}
-const onSubmit = values => {
+const initialValues = {
+  name: "",
+  email: "",
+  channel: "",
+};
+const onSubmit = (values) => {
   alert(JSON.stringify(values, null, 2));
-}
-const validate = values => {
+};
+const validate = (values) => {
   const errors = {};
   if (!values.name) {
-      errors.name = 'Required';
+    errors.name = "Required";
   }
   if (!values.channel) {
-      errors.channel = 'Required';
+    errors.channel = "Required";
   }
   if (!values.email) {
-      errors.email = 'Required';
+    errors.email = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors.email = 'Invalid email address';
+    errors.email = "Invalid email address";
   }
   return errors;
-}
+};
 
 function Login(props) {
   const Navigate = useNavigate();
@@ -63,7 +63,7 @@ function Login(props) {
   const handleCheck = (e) => {
     setRememberMe(e.target.checked);
   };
-  const handleLogin = async(e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
@@ -81,6 +81,13 @@ function Login(props) {
       console.log(err);
     }
   };
+
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+    validate,
+  });
+
   return (
     <div>
       <div style={{ marginTop: 50 }}>
@@ -130,10 +137,7 @@ function Login(props) {
                   <Divider />
                   <Grid>
                     <p> Don't have an account</p>
-                    <Link
-                      to="/signup"
-                      className="account"
-                    >
+                    <Link to="/signup" className="account">
                       Sign Up
                     </Link>
                   </Grid>
@@ -142,7 +146,6 @@ function Login(props) {
             </CardContent>
           </Card>
         </Container>
-
       </div>
     </div>
   );

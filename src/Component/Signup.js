@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Radio from "@mui/material/Radio";
+import  {Paper} from "@mui/material";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
@@ -21,6 +22,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { Container } from "@mui/system";
 import { auth } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { async } from "@firebase/util";
 
 const LoginSchema = (values) => {
   const errors = {};
@@ -62,10 +64,6 @@ const LoginSchema = (values) => {
   if (!values.hobbies) {
     errors.hobbies = "*This Field is Required";
   }
-  if (!values.dept) {
-    errors.gender = "*This Field is Required";
-  }
-
   return errors;
 };
 
@@ -83,7 +81,7 @@ function Signup() {
     const { salary } = values;
     const { hobbies } = values;
     const { gender } = values;
-    const { dept } = values;
+    const { type } = values;
     const uid = user.user.uid;
 
     await setDoc(doc(db, `employeeData`, `${user?.user.uid}`), {
@@ -95,7 +93,7 @@ function Signup() {
       salary,
       city,
       hobbies,
-      dept: "",
+      type: "",
       createdAt: new Date(),
     });
   };
@@ -103,20 +101,6 @@ function Signup() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     console.log("email", formik.values.email, "pass", formik.values.password);
-    await createUserWithEmailAndPassword(
-      auth,
-      formik.values.email,
-      formik.values.password
-    )
-      .then((res) => {
-        Navigate("/");
-        if (res) {
-          createUserDocument(res, formik.values);
-        }
-      })
-      .catch((error) => {
-        console.log("error", error);
-      });
   };
   const formik = useFormik({
     initialValues: {
@@ -128,16 +112,25 @@ function Signup() {
       salary: "",
       gender: "",
       hobbies: "",
-      dept: "",
+      type: "",
     },
     validate: LoginSchema,
-    onSubmit: (values) => {
-      alert(JSON.stringify(values));
-      console.log(values);
+    onSubmit: async (formik) => {
+      await createUserWithEmailAndPassword(auth, formik.email, formik.password)
+        .then((res) => {
+          Navigate("/");
+          if (res) {
+            createUserDocument(res, formik);
+          }
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
     },
   });
   return (
     <div style={{ marginTop: 50 }}>
+      
       <Container component="main" maxWidth="sm">
         <Card>
           <CardContent>
@@ -145,208 +138,210 @@ function Signup() {
               className="center"
               style={{ textAlign: "center", marginTop: 10 }}
             >
-              <Formik
-                validationSchema={LoginSchema}
-                onSubmit={(values) => {
-                  console.log(values);
-                  alert("Form is validated! Submitting the form...");
-                }}
-              >
-                {({
-                  touched,
-                  errors,
-                  isSubmitting,
-                  values,
-                  handleChange,
-                  handleBlur,
-                }) => (
-                  <div>
-                    <center style={{ marginBottom: 20 }}>
-                      <Typography style={{ fontSize: "bold" }}>
-                        Sign Up
-                      </Typography>
-                    </center>
-                    <Form onSubmit={(e) => handleSignUp(e)}>
-                      <TextField
-                        style={{ marginRight: "20px" }}
-                        name="fname"
-                        id="outlined-basic"
-                        label="Enter First Name"
-                        type="text"
-                        variant="outlined"
-                        value={formik.values.fname}
-                        onChange={formik.handleChange}
-                      />
-                      {formik.errors.fname && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.fname}
-                        </div>
-                      )}
-                      <TextField
-                        name="lname"
-                        id="outlined-basic"
-                        label="Enter Last Name"
-                        type="text"
-                        value={formik.values.lname}
-                        onChange={formik.handleChange}
-                      />
-                      {formik.errors.lname && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.lname}
-                        </div>
-                      )}
-                      <br /> <br />
-                      <TextField
-                        style={{ marginRight: "20px" }}
-                        name="email"
-                        id="outlined-basic"
-                        label="Enter Email"
-                        type="email"
-                        value={formik.values.email}
-                        onChange={formik.handleChange}
-                      />
-                      {formik.errors.email && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.email}
-                        </div>
-                      )}
-                      <TextField
-                        id="filled-basic"
-                        name="password"
-                        variant="outlined"
-                        type="password"
-                        label="Enter password"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                      />
-                      {formik.errors.password && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.password}
-                        </div>
-                      )}
-                      <br />
-                      <br />
-                      <TextField
-                        style={{ marginRight: "20px" }}
-                        id="outlined-basic"
-                        name="city"
-                        label="Enter City"
-                        value={formik.values.city}
-                        onChange={formik.handleChange}
-                        variant="outlined"
-                      />
-                      {formik.errors.city && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.city}
-                        </div>
-                      )}
-                      <TextField
-                        id="outlined-basic"
-                        name="salary"
-                        type="number"
-                        label="Enter Salary"
-                        value={formik.values.salary}
-                        onChange={formik.handleChange}
-                        variant="outlined"
-                      />
-                      {formik.errors.salary && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.salary}
-                        </div>
-                      )}
-                      <FormControl style={{ marginTop: 5 }}>
-                        <Typography>Gender</Typography>
-
-                        <RadioGroup
-                          row
-                          aria-labelledby="demo-row-radio-buttons-group-label"
-                          name="gender"
-                          onChange={formik.handleChange}
-                        >
-                          <FormControlLabel
-                            value="female"
-                            control={<Radio />}
-                            label="Female"
-                          />
-                          <FormControlLabel
-                            value="male"
-                            control={<Radio />}
-                            label="Male"
-                          />
-                        </RadioGroup>
-                        {formik.errors.gender && (
-                          <div style={{ color: "#1976d2" }}>
-                            {formik.errors.gender}
-                          </div>
-                        )}
-                      </FormControl>
-                      <br />
-                      <br />
-                      <Typography>Hobbies</Typography>
-                      <TextField
-                        style={{ marginRight: "20px" }}
-                        id="outlined-basic"
-                        minRows={1}
-                        name="hobbies"
-                        type="hobbies"
-                        value={formik.values.hobbies}
-                        onChange={formik.handleChange}
-                        label="Hobbies"
-                        variant="outlined"
-                      />
-                      {formik.errors.salary && (
-                        <div style={{ color: "#1976d2" }}>
-                          {formik.errors.hobbies}
-                        </div>
-                      )}
-                      <br /> <br />
-                      <Typography>Job Designation</Typography>
-                      <FormControl>
-                        {/* <Typography>Job Designation</Typography> */}
-                        <RadioGroup
-                          row
-                          name="dept"
-                          onChange={formik.handleChange}
-                        >
-                          <FormControlLabel
-                            value="employee"
-                            control={<Radio />}
-                            label="Employee"
-                          />
-                          <FormControlLabel
-                            value="manager"
-                            control={<Radio />}
-                            label="Manager"
-                          />
-                        </RadioGroup>
-                        {formik.errors.dept && (
-                          <div style={{ color: "#1976d2" }}>
-                            {formik.errors.dept}
-                          </div>
-                        )}
-                      </FormControl>
-                      <br />
-                      <br />
-                      <Button type="submit" variant="contained">
-                        Sign Up
-                      </Button>
-                      <br />
-                      <br />
-                      <Divider />
-                      <Grid>
-                        <p>Already account</p>
-                        <Link className="account" to="/">
-                          Login
-                        </Link>
-                      </Grid>
-                    </Form>
+              <div>
+                <center style={{ marginBottom: 20 }}>
+                  <Typography style={{ fontSize: "bold" }}>Sign Up</Typography>
+                </center>
+                <form>
+                  <div style={{display:'flex' ,marginBottom:-20}}>
+                  <div >
+                    <TextField
+                      style={{ marginRight: "20px" }}
+                      name="fname"
+                      id="outlined-basic"
+                      label="Enter First Name"
+                      type="text"
+                      variant="outlined"
+                      value={formik.values.fname}
+                      onChange={formik.handleChange}
+                    />
+                  
+                    {formik.errors.fname && (
+                      <div style={{ color: "#1976d2" }}>{formik.errors.fname}</div>
+                    )}
+                      </div>
+<div>
+                    <TextField
+                      name="lname"
+                      id="outlined-basic"
+                      label="Enter Last Name"
+                      type="text"
+                      value={formik.values.lname}
+                      onChange={formik.handleChange}
+                    />
+                    {console.log(formik.errors)}
+                    {formik.errors.lname && (
+                      <div style={{ color: "#1976d2" }}>
+                        {formik.errors.lname}
+                      </div>
+                    )}
                   </div>
-                )}
-              </Formik>
+                  </div>
+                  <br /> <br />
+                  <div style={{display:'flex' ,marginBottom:-20}}>
+                    <div>
+                    <TextField
+                      style={{ marginRight: "20px" }}
+                      name="email"
+                      id="outlined-basic"
+                      label="Enter Email"
+                      type="email"
+                      value={formik.values.email}
+                      onChange={formik.handleChange}
+                    />
+                  
+                    {formik.errors.email && (
+                      <div style={{ color: "#1976d2" }}>
+                        {formik.errors.email}
+                      </div>
+                    )}
+                    </div>
+                    <div>
+                    <TextField
+                      id="filled-basic"
+                      name="password"
+                      variant="outlined"
+                      type="password"
+                      label="Enter password"
+                      value={formik.values.password}
+                      onChange={formik.handleChange}
+                    />
+                    {formik.errors.password && (
+                      <div style={{ color: "#1976d2" }}>
+                        
+                        {formik.errors.password}
+                      </div>
+                    )}
+                    </div>
+                  </div>
+                  <br />
+                  <br />
+                  <div style={{display:'flex' }}>
+                    <div>
+                    <TextField
+                      style={{ marginRight: "20px" }}
+                      id="outlined-basic"
+                      name="city"
+                      label="Enter City"
+                      value={formik.values.city}
+                      onChange={formik.handleChange}
+                      variant="outlined"
+                    />
+                    {formik.errors.city && (
+                      <div style={{ color: "#1976d2" }}>
+                        {formik.errors.city}
+                      </div>
+                    )}
+                    </div>
+                    <div>
+                    <TextField
+                      id="outlined-basic"
+                      name="salary"
+                      type="number"
+                      label="Enter Salary"
+                      value={formik.values.salary}
+                      onChange={formik.handleChange}
+                      variant="outlined"
+                    />
+                    {formik.errors.salary && (
+                      <div style={{ color: "#1976d2" }}>
+                        {formik.errors.salary}
+                      </div>
+                    )}
+                    </div>
+                  </div>
+                  <FormControl style={{ marginTop: 5 }}>
+                    <Typography>Gender</Typography>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="gender"
+                      onChange={formik.handleChange}
+                    >
+                      <FormControlLabel
+                        value="female"
+                        control={<Radio />}
+                        name="gender"
+                        label="Female"
+                      />
+                      <FormControlLabel
+                        value="male"
+                        control={<Radio />}
+                        name="gender"
+                        label="Male"
+                      />
+                    </RadioGroup>
+                    {formik.errors.gender && (
+                      <div style={{ color: "#1976d2" }}>
+                        {formik.errors.gender}
+                      </div>
+                    )}
+                  </FormControl>
+                  <br />
+                  <br />
+                  <Typography>Hobbies</Typography>
+                  <TextField
+                    style={{ marginRight: "20px" }}
+                    id="outlined-basic"
+                    minRows={1}
+                    name="hobbies"
+                    type="hobbies"
+                    value={formik.values.hobbies}
+                    onChange={formik.handleChange}
+                    label="Hobbies"
+                    variant="outlined"
+                  />
+                  {formik.errors.salary && (
+                    <div style={{ color: "#1976d2" }}>
+                      {formik.errors.hobbies}
+                    </div>
+                  )}
+                  <br /> <br />
+                  <Typography>Job Designation</Typography>
+                  <FormControl>
+                    <RadioGroup row name="type" onChange={formik.handleChange}>
+                      <FormControlLabel
+                        value="employee"
+                        control={<Radio />}
+                        label="Employee"
+                        name="type"
+                      />
+                      <FormControlLabel
+                        value="manager"
+                        control={<Radio />}
+                        label="Manager"
+                        name="type"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                  {formik.errors.type && (
+                    <div style={{ color: "#1976d2" }}>{formik.errors.type}</div>
+                  )}
+                  <br />
+                  <br />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    onClick={formik.handleSubmit}
+                  >
+                    Sign Up
+                  </Button>
+                  <br />
+                  <br />
+                  <Divider />
+                  <Grid>
+                    <p>Already account</p>
+                    <Link className="account" to="/">
+                      Login
+                    </Link>
+                  </Grid>
+                </form>
+              </div>
             </div>
           </CardContent>
         </Card>
       </Container>
+      {/* </Paper> */}
     </div>
   );
 }
