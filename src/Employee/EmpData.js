@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import { TableRows } from "@mui/icons-material";
 // import { setRows } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import { Container ,Button} from "@mui/material";
+import { Container, Button } from "@mui/material";
 import { db } from "../firebaseConfig";
 import {
   query,
@@ -19,7 +19,6 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
-
 
 function EmpData() {
   const { uid } = useParams();
@@ -57,7 +56,7 @@ function EmpData() {
   }, [uid]);
   return (
     <div>
-      <Container component="main" style={{marginTop:25}}>
+      <Container component="main" style={{ marginTop: 25 }}>
         <TableContainer component={Paper}>
           <Table sx={{ Width: "400px" }} aria-label="simple table">
             <TableHead>

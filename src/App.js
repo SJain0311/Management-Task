@@ -4,6 +4,8 @@ import { Route, Routes } from "react-router-dom";
 import AllData from './Manager/AllData';
 import './App.css';
 import EmpData from "./Employee/EmpData";
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
 
@@ -16,6 +18,7 @@ function App() {
         <Route path="/allData" element={<AllData/>}/>
 
       </Routes>
+      <ToastContainer autoClose={5000}  />
     </div>
   );
 }

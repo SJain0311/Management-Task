@@ -8,7 +8,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { query, collection, getDocs, where } from "firebase/firestore";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -74,11 +74,12 @@ function Login(props) {
       console.log(type);
       if (type) {
         type === "manager" ? Navigate(`/allData`) : Navigate(`/empData/${uid}`);
+        toast.success("Successfull Login")
       } else {
-        return "No user Found";
+        toast.error("No user Found", { type: "error" });
       }
     } catch (err) {
-      console.log(err);
+      toast.error("Invalid Credential", { type: "error" });
     }
   };
 

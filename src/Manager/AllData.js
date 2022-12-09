@@ -83,7 +83,7 @@ function AllData(props) {
         collection(db, "employeeData"),
         where("type", "==", "employee"),
         where("dept", "==", "It"),
-        orderBy("salary", "desc")
+        orderBy("salary")
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);
@@ -100,7 +100,8 @@ function AllData(props) {
         collection(db, "employeeData"),
         where("city", "==", "Surat"),
         where("dept", "==", "It"),
-        where("type", "==", "employee")
+        where("type", "==", "employee"),
+        startAt("S"||"s")
       );
       const snapshot = await getDocs(queryRef);
       console.log(snapshot);

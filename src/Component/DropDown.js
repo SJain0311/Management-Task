@@ -12,7 +12,7 @@ function DropDown({ data }) {
     updateDept(uid, e.target.value);
     setDepts(e.target.value);
   };
-  //dept ===e.target.value
+ 
   const updateDept = async (uid, depts) => {
     const blogRef = doc(db, `employeeData`, `${uid}`);
     await updateDoc(blogRef, {
@@ -22,27 +22,24 @@ function DropDown({ data }) {
       .catch((err) => console.log(err));
   };
   useEffect(() => {
-    // console.log(data);
     setDepts(data.dept);
   }, [data.dept]);
   return (
-   
-      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-        <Select
-          labelId="demo-simple-select-standard-label"
-          id="demo-simple-select-standard"
-          value={depts}
-          onChange={(e) => {
-            handleChange(e, data.id);
-          }}
-          // label="Age"
-        >
-          <MenuItem value={"HR"}>HR</MenuItem>
-          <MenuItem value={"Sales"}>Sales</MenuItem>
-          <MenuItem value={"It"}>IT</MenuItem>
-        </Select>
-      </FormControl>
-  
+    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+      <Select
+        labelId="demo-simple-select-standard-label"
+        id="demo-simple-select-standard"
+        value={depts}
+        onChange={(e) => {
+          handleChange(e, data.id);
+        }}
+       
+      >
+        <MenuItem value={"HR"}>HR</MenuItem>
+        <MenuItem value={"Sales"}>Sales</MenuItem>
+        <MenuItem value={"IT"}>IT</MenuItem>
+      </Select>
+    </FormControl>
   );
 }
 
